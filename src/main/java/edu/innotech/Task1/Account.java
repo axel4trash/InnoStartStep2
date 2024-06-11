@@ -9,7 +9,7 @@ public class Account {
     private final Stack<Command> commands = new Stack<>(); //список команд над Account в виде стека
 
     public Map<ECurrency, Integer>  getBalance() {
-        return balance;
+        return new HashMap<>(balance);
     }
     public Integer                  getBalanceByCurrency(ECurrency currency){
         return this.balance.get(currency);
