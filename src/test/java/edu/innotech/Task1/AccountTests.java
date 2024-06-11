@@ -3,6 +3,7 @@ package edu.innotech.Task1;
 import edu.innotech.Task1.Account;
 import edu.innotech.Task1.ECurrency;
 import edu.innotech.Task1.NothingToUndo;
+import edu.innotech.Task1.Loadable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -135,22 +136,18 @@ public class AccountTests {
         etalonMap.put(ECurrency.RUB, 1000);
         etalonMap.put(ECurrency.USD, 500);
 
-        acc.addToBalance(ECurrency.RUB, 1000);
-        acc.addToBalance(ECurrency.USD, 500);
+        for(Map.Entry<ECurrency, Integer> item : etalonMap.entrySet()){
+            acc.addToBalance(item.getKey(), item.getValue());
+        }
 
         Loadable accSaved = acc.save();
 
         acc.setOwnerName("NewOwner");
         acc.addToBalance(ECurrency.USD, 4400);
-        accSaved.load();
+        acc.load(accSaved);
 
         Assertions.assertEquals("Owner", acc.getOwnerName());
         Assertions.assertTrue(balancesAreEqual(etalonMap, acc.getBalance()));
-
-        /*Assertions.assertAll("Комплексная проверка состояния:",
-                () -> Assertions.assertEquals("Owner", acc.getOwnerName()),
-                () -> Assertions.assertTrue(etalonMap.equals(acc.getBalance()))
-                );*/
 
         System.out.println("OK");
     }

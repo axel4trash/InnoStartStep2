@@ -78,33 +78,17 @@ public class Account {
 
     //>> История состояний объекта
     public Loadable save(){
-        return new Savepoint();
+        Savepoint savepoint = new Savepoint(this);
+        this.accountHistoryState.add(savepoint);
+        return savepoint;
     }
 
-    private class Savepoint implements Loadable{
-        private final String ownerName;
-        private final HashMap<ECurrency, Integer> balance;
-
-        public Savepoint(){
-            this.ownerName = Account.this.ownerName;
-            this.balance = new HashMap<>(Account.this.balance);
-            Account.this.accountHistoryState.add(this);
-        }
-
-        @Override
-        public void load(){
-            Account.this.ownerName = this.ownerName;
-            Account.this.balance = new HashMap<>(this.balance);
-            Account.this.commands.clear(); //очистка истории команд
-        }
-
-        @Override
-        public String toString() {
-            String shortBalance = Account.balanceToStringViaBuilder(this.balance);
-            return "Savepoint{ownerName='" + ownerName + '\'' +
-                    ", balance=" + shortBalance +
-                    '}';
-        }
+    public void load(Loadable save){
+        Savepoint savepoint = (Savepoint)save;
+        this.setOwnerName(savepoint.getOwnerName());
+        this.balance.clear();
+        this.balance.putAll(savepoint.getBalance());
+        this.commands.clear(); //очистка истории команд
     }
 
     public void showAllHistoryState() {
